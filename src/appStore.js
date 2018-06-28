@@ -12,8 +12,23 @@ var cognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 var AWS = require('aws-sdk');
 AWS.config.region = rtConfig.cognito_region;
 
+function getGenericHandler(actionDesc) {
+  return {
+      onSuccess: function (result) {
+          alert(actionDesc+" :SUCCESS");
+          console.log(actionDesc+' :Success, ' + JSON.stringify(result));
+      },
+      onFailure: function(err) {
+          alert(actionDesc+" :FAILED, "+(err.message || JSON.stringify(err)));
+          console.log(actionDesc+' :FAILED, ' + JSON.stringify(err));
+      },
+  };
+};
+
+
 export default {
   state: {
+    authenticated: false,
     userToken: undefined,
     cognitoUser: undefined
   },
@@ -26,6 +41,8 @@ export default {
       return undefined;
   },
 
+  // See https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
+  // Use case 1
   doSignUp(username, email, password, callback) {
     var attributeList = [];
     var dataEmail = {
@@ -50,6 +67,8 @@ export default {
     }(callback));
   },
 
+  // See https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
+  // Use case 4
   // callback will receive {result:..., detail:...}
   doLogin(username, password, callback) {
     // step 1: log in user with user pool & obtain token
@@ -70,6 +89,7 @@ export default {
           var res = 'LOGIN SUCCESS';
           var detail = 'Decode token at https://jwt.io/';
           store.state.userToken = result.getAccessToken().getJwtToken();
+          store.state.authenticated = true;
 
           console.log('Login Success: ' + JSON.stringify(result));
           console.log('Decoded token: ' + JSON.stringify(store.getDecodedUserToken()));
@@ -110,5 +130,42 @@ export default {
         };
       }(callback)
     }); // cognitoUser.authenticateUser(authenticationDetails, {
-  }
+  },
+
+  doLogout() {
+    this.state.cognitoUser.signOut();
+    this.state.authenticated = false;
+  },
+
+  doUpdateAttribute(attributes) {
+    // see https://docs.aws.amazon.com/cognito/latest/developerguide/using-amazon-cognito-user-identity-pools-javascript-examples.html
+    // updateAttribute
+    var attributeList = [];
+    attributes.forEach(
+      element => {
+        attributeList.push(new AmazonCognitoIdentity.CognitoUserAttribute(element));
+      }
+    );
+    this.state.cognitoUser.updateAttributes(attributeList, function(err, result) {
+        if (err) {
+            alert(err.message);
+            console.log("Update user attribute failed:"+JSON.stringify(err));
+            return;
+        }
+        console.log('call result: ' + JSON.stringify(result));
+        alert("Attribute updated");
+    });
+  },
+
+  doRequestVerifyAttributeCode(attributeName) {
+    var handler = getGenericHandler("Request verification code for "+attributeName);
+    handler['inputVerificationCode'] = undefined;
+    this.state.cognitoUser.getAttributeVerificationCode(attributeName, handler);
+  },
+
+  doVerifyAttribute(attributeName, verificationCode) {
+    this.state.cognitoUser.verifyAttribute(
+      attributeName, verificationCode,
+      getGenericHandler("Verify attribute "+attributeName));
+  },
 }

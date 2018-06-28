@@ -2,15 +2,12 @@
 <div>
 <h1>{{ msg }}</h1></br>
 <button v-on:click="gotoPage('/')"> Home </button> |
-<template v-if="userLogedIn">
-Oh hi, {{userName}}
-<button v-on:click="gotoPage('/Attribute')"> User's Home </button>
-</template>
-<template v-else>
 <button v-on:click="gotoPage('/SignUp')"> Sign Up </button> |
 <button v-on:click="gotoPage('/Login')"> Login In </button> |
-</template>
-
+<template v-if="notAuthenticated">(Use after login)</template>
+<button v-on:click="gotoPage('/Attribute')"> User's Home </button>
+<button v-on:click="signOut"> Logout </button>
+Hi, {{userName}}
 <hr/>
 </div>
 </template>
@@ -26,14 +23,21 @@ export default {
   methods: {
     gotoPage:function(url) {
       this.$router.push(url);
+    },
+    signOut:function() {
+      this.appStore.doLogout();
+      this.$router.push("/");
     }
   },
   computed : {
-    userLogedIn : function() {
-      return this.appStore.state.userToken !== undefined;
+    notAuthenticated : function() {
+      return !this.appStore.state.authenticated;
     },
     userName : function() {
-      return this.appStore.getDecodedUserToken().username;
+      if (this.appStore.state.userToken)
+        return this.appStore.getDecodedUserToken().username;
+      else
+        return 'guest';
     }
   }
 }
