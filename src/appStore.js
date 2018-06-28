@@ -150,5 +150,17 @@ export default {
     this.state.cognitoUser.getMFAOptions(
       getResultToStateHandler('Get MFA Options',this.state,'mfaOptions')
     );
+  },
+
+  enableMFA() {
+      this.state.cognitoUser.enableMFA(
+        getResultToCallbackHandler('Enable MFA',result=>{})
+      );
+  },
+
+  disableMFA() {
+      this.state.cognitoUser.disableMFA(
+        getResultToCallbackHandler('Disable MFA',result=>{})
+      );
   }
 }

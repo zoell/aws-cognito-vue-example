@@ -1,6 +1,9 @@
 <template>
   <div>
-  <button v-on:click="getMFAOptions">Get MFA Options</button><br/>
+  <button v-on:click="getMFAOptions">Get MFA Options</button>
+  <button v-on:click="enableMFA">Enable MFA</button>
+  <button v-on:click="disableMFA">Disable MFA</button><br/>
+
   Current MFA options: {{mfaOptionsStr}} <br/>
 
   </div>
@@ -17,7 +20,13 @@ export default {
   methods: {
     getMFAOptions: function (event) {
       this.appStore.getMFAOptions();
-    }
+    },
+    enableMFA: function(event){
+      this.appStore.enableMFA();
+    },
+    disableMFA: function(event){
+      this.appStore.disableMFA();
+    },
   },
 
   computed: {
