@@ -12,20 +12,23 @@
     <input v-model="smsCode"></input>
     <button v-on:click='verifyPhone'>Verify Phone</button>
     <hr/>
-    <b-table striped hover :items="userAttributes"></b-table>
+    User Attributes:<b-table striped hover :items="userAttributes"></b-table><br/>
+    User Devices:<b-table striped hover :items="userDevicesAsArray"></b-table>
   </div>
 </template>
 
 <script>
 
+var {getGenericHandler,getResultToStateHandler} = require('../utils')
+
 export default {
   data () {
     return {
-      attributeName:undefined,
       name:undefined,
+      userAttributes:undefined,
+      userDevices:undefined,
       address: undefined,
       phone: undefined,
-      userAttributes:[],
       smsCode: undefined,
       appStore:window.appStore,
     }
@@ -34,40 +37,21 @@ export default {
   methods: {
 
     fetchAttributes: function (event) {
-    // see https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
-    // use case 5. retrieve user attributes for authenticated user
-    this.appStore.state.cognitoUser.getUserAttributes(
-      function(componentData) {
-        return function(err, result) {
-          if (err) {
-              alert(err.message || JSON.stringify(err));
-              return;
-          }
-          componentData.userAttributes.splice(0);
-          for (var i=0; i<result.length; i++){
-            componentData.userAttributes.push(result[i]);
-          };
-        };
-      }(this));
+      // see https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
+      // use case 5. retrieve user attributes for authenticated user
+      this.appStore.state.cognitoUser.getUserAttributes(
+        getResultToStateHandler(
+          'Get user attributes',this,'userAttributes'
+        )
+      );
     },
 
     fetchDevices: function (event) {
       // see https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
       // use case 18. retrieve user devices
-      this.appStore.state.cognitoUser.listDevices(55,null,{
-        onSuccess: function(componentData){
-          return function(result) {
-            componentData.userAttributes.splice(0);
-            for (var i=0; i<result.Devices.length; i++) {
-              componentData.userAttributes.push(result.Devices[i]);
-            }
-          }
-        }(this),
-        onFailure: function(err){
-          alert(err.message);
-          console.log("List devices failed: "+JSON.stringify(err));
-        }
-      });
+      this.appStore.state.cognitoUser.listDevices(
+        55,null,getGenericHandler('List user device',this,'userDevices')
+      );
     },
 
     updateAttribute: function(event) {
@@ -96,7 +80,32 @@ export default {
     verifyPhone: function(event) {
       this.appStore.doVerifyAttribute('phone_number', this.smsCode);
     }
+  },
+
+  computed: {
+    userDevicesAsArray: function() {
+      // this is to flaten the DeviceAttributes array as attributes
+      if (this.userDevices) {
+        var res = [];
+        this.userDevices.Devices.forEach(
+          device=>{
+            var dres = Object.assign({},device);
+            device.DeviceAttributes.forEach(
+              att=>{
+                dres[att.Name]=att.Value;
+              }
+            );
+            delete dres.DeviceAttributes;
+            res.push(dres);
+          }
+        );
+        return res;
+      }
+      else
+        return undefined;
+    }
   }
+
 }
 
 </script>

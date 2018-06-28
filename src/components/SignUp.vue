@@ -4,8 +4,6 @@
   Email: <input v-model="email" placeholder="email"></br>
   Password:<input v-model="password"></br>
   <button v-on:click="signUpCognito">Sign Up</button></br>
-  Result: {{result}}</br>
-  Detail: {{detail}}
   </div>
 </template>
 
@@ -17,21 +15,13 @@ export default {
       username:'',
       email: '',
       password: '',
-      result:"",
-      detail:"",
       appStore:window.appStore
     }
   },
   methods: {
     signUpCognito: function() {
       appStore.doSignUp(
-        this.username, this.email, this.password,
-        function(componentData) {
-          return function(result, detail) {
-            componentData.result = result;
-            componentData.detail = detail;
-          }
-        }(this)
+        this.username, this.email, this.password
       );
     }
   }

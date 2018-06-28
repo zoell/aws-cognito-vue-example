@@ -4,8 +4,10 @@
 <button v-on:click="gotoPage('/')"> Home </button> |
 <button v-on:click="gotoPage('/SignUp')"> Sign Up </button> |
 <button v-on:click="gotoPage('/Login')"> Login In </button> |
-<template v-if="notAuthenticated">(Use after login)</template>
-<button v-on:click="gotoPage('/Attribute')"> User's Home </button>
+<template v-if="notAuthenticated">(Authenticate First)</template>
+<button v-on:click="gotoPage('/Attribute')"> Attributes </button>
+<button v-on:click="gotoPage('/MFA')"> MFA </button>
+
 <button v-on:click="signOut"> Logout </button>
 Hi, {{userName}}
 <hr/>
@@ -36,6 +38,8 @@ export default {
     userName : function() {
       if (this.appStore.state.userToken)
         return this.appStore.getDecodedUserToken().username;
+      else if (this.appStore.state.cognitoUser)
+        return this.appStore.state.cognitoUser.username;
       else
         return 'guest';
     }

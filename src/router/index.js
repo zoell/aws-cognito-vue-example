@@ -4,6 +4,7 @@ import SignUp from '@/components/SignUp'
 import Login from '@/components/Login'
 import Welcome from '@/components/Welcome'
 import Attribute from '@/components/Attribute'
+import MFA from '@/components/MFA'
 
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ export default new Router({
       path: '/Attribute',
       name: 'Attribute',
       component: Attribute
+    },
+    {
+      path: '/MFA',
+      name: 'MFA',
+      component: MFA
     },
     {
       path: '/',

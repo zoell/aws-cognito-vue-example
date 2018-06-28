@@ -2,6 +2,7 @@
 var rtConfig = require('./rt-config')
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 var jwt_decode = require('jwt-decode');
+var {getResultToCallbackHandler,getGenericHandler,getResultToStateHandler} = require('./utils')
 
 var poolData = {
   UserPoolId: rtConfig.cognito_user_pool_id,
@@ -12,25 +13,12 @@ var cognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 var AWS = require('aws-sdk');
 AWS.config.region = rtConfig.cognito_region;
 
-function getGenericHandler(actionDesc) {
-  return {
-      onSuccess: function (result) {
-          alert(actionDesc+" :SUCCESS");
-          console.log(actionDesc+' :Success, ' + JSON.stringify(result));
-      },
-      onFailure: function(err) {
-          alert(actionDesc+" :FAILED, "+(err.message || JSON.stringify(err)));
-          console.log(actionDesc+' :FAILED, ' + JSON.stringify(err));
-      },
-  };
-};
-
-
 export default {
   state: {
     authenticated: false,
     userToken: undefined,
-    cognitoUser: undefined
+    cognitoUser: undefined,
+    mfaOptions: undefined,
   },
   config: rtConfig,
 
@@ -43,7 +31,7 @@ export default {
 
   // See https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
   // Use case 1
-  doSignUp(username, email, password, callback) {
+  doSignUp(username, email, password) {
     var attributeList = [];
     var dataEmail = {
       Name: 'email',
@@ -51,20 +39,14 @@ export default {
     };
     var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
     attributeList.push(attributeEmail);
-    cognitoUserPool.signUp(username, password, attributeList, null, function(callback) {
-      return function(err, result) {
-        if (err) {
-          console.log("Sign up failed:" + JSON.stringify(err));
-          callback('ERROR', err.message);
-          return;
-        }
-        var cognitoUser = result.user;
-        console.log("Sign up as " + cognitoUser.getUsername() + ", RESULT=" + JSON.stringify(result));
-        callback("SUCCESS",
-          "Username:" + cognitoUser.getUsername() + ", check verification email & console log"
-        );
-      };
-    }(callback));
+    cognitoUserPool.signUp(username, password, attributeList, null,
+      getResultToCallbackHandler(
+        'Sign up',
+        function(state){
+          return function(result){state.cognitoUser = result.user;}
+        }(this.state)
+      )
+    );
   },
 
   // See https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
@@ -146,15 +128,10 @@ export default {
         attributeList.push(new AmazonCognitoIdentity.CognitoUserAttribute(element));
       }
     );
-    this.state.cognitoUser.updateAttributes(attributeList, function(err, result) {
-        if (err) {
-            alert(err.message);
-            console.log("Update user attribute failed:"+JSON.stringify(err));
-            return;
-        }
-        console.log('call result: ' + JSON.stringify(result));
-        alert("Attribute updated");
-    });
+    this.state.cognitoUser.updateAttributes(
+      attributeList,
+      getResultToStateHandler('Update user attribute',{},'result')
+    );
   },
 
   doRequestVerifyAttributeCode(attributeName) {
@@ -168,4 +145,10 @@ export default {
       attributeName, verificationCode,
       getGenericHandler("Verify attribute "+attributeName));
   },
+
+  getMFAOptions() {
+    this.state.cognitoUser.getMFAOptions(
+      getResultToStateHandler('Get MFA Options',this.state,'mfaOptions')
+    );
+  }
 }
