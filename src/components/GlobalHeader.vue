@@ -33,7 +33,8 @@ export default {
   },
   computed : {
     notAuthenticated : function() {
-      return !this.appStore.state.authenticated;
+      return ((!this.appStore.state.cognitoUser) ||
+        (!this.appStore.state.cognitoUser.signInUserSession));
     },
     userName : function() {
       if (this.appStore.state.userToken)

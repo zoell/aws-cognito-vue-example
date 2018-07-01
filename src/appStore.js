@@ -15,7 +15,6 @@ AWS.config.region = rtConfig.cognito_region;
 
 export default {
   state: {
-    authenticated: false,
     userToken: undefined,
     cognitoUser: undefined,
     mfaOptions: undefined,
@@ -71,7 +70,6 @@ export default {
           var res = 'LOGIN SUCCESS';
           var detail = 'Decode token at https://jwt.io/';
           store.state.userToken = result.getAccessToken().getJwtToken();
-          store.state.authenticated = true;
 
           console.log('Login Success: ' + JSON.stringify(result));
           console.log('Decoded token: ' + JSON.stringify(store.getDecodedUserToken()));
@@ -116,7 +114,6 @@ export default {
 
   doLogout() {
     this.state.cognitoUser.signOut();
-    this.state.authenticated = false;
   },
 
   doUpdateAttribute(attributes) {
