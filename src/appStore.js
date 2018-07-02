@@ -2,7 +2,7 @@
 var rtConfig = require('./rt-config')
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 var jwt_decode = require('jwt-decode');
-var {getResultToCallbackHandler,getGenericHandler,getResultToStateHandler} = require('./utils')
+var {getResultToCallbackHandler,getResultToStateSuccessFailureHandlerObj,getResultToStateHandler} = require('./utils')
 
 var poolData = {
   UserPoolId: rtConfig.cognito_user_pool_id,
@@ -15,15 +15,35 @@ AWS.config.region = rtConfig.cognito_region;
 
 export default {
   state: {
-    userToken: undefined,
+    authenticationResult: undefined,
     cognitoUser: undefined,
     mfaOptions: undefined,
   },
   config: rtConfig,
 
-  getDecodedUserToken() {
-    if (this.state.userToken !== undefined) {
-      return jwt_decode(this.state.userToken);
+  getAccessTokenFromAuthenticationResult(decode) {
+    if (this.state.authenticationResult !== undefined) {
+      return decode ?
+        jwt_decode(this.state.authenticationResult.accessToken.jwtToken):
+        this.state.authenticationResult.accessToken.jwtToken;
+    } else
+      return undefined;
+  },
+
+  getIdTokenFromAuthenticationResult(decode) {
+    if (this.state.authenticationResult !== undefined) {
+      return decode ?
+        jwt_decode(this.state.authenticationResult.idToken.jwtToken):
+        this.state.authenticationResult.idToken.jwtToken;
+    } else
+      return undefined;
+  },
+
+  getRefreshTokenFromAuthenticationResult(decode) {
+    if (this.state.authenticationResult !== undefined) {
+      return decode ?
+        jwt_decode(this.state.authenticationResult.refreshToken.token):
+        this.state.authenticationResult.refreshToken.token;
     } else
       return undefined;
   },
@@ -51,65 +71,56 @@ export default {
   // See https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
   // Use case 4
   // callback will receive {result:..., detail:...}
-  doLogin(username, password, callback) {
-    // step 1: log in user with user pool & obtain token
-    var authenticationData = {
-      Username: username,
-      Password: password,
-    };
-    var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
-    // using global userPool variable
+  doLogin(username, password, onRequireMfaCallback) {
+    // prepare a handler
+    var handler = getResultToStateSuccessFailureHandlerObj('Login', this.state, 'authenticationResult');
+    handler['mfaRequired'] = onRequireMfaCallback;
+    // prepare cognito user for authentication
     var userData = {
       Username: username,
       Pool: cognitoUserPool
     };
     this.state.cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-    this.state.cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: function(store, callback) {
-        return function(result) {
-          var res = 'LOGIN SUCCESS';
-          var detail = 'Decode token at https://jwt.io/';
-          store.state.userToken = result.getAccessToken().getJwtToken();
+    // prepare authenticatioin details for authentication
+    var authenticationData = {
+      Username: username,
+      Password: password,
+    };
+    var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
+    // do authentication
+    this.state.cognitoUser.authenticateUser(authenticationDetails, handler);
+  },
 
-          console.log('Login Success: ' + JSON.stringify(result));
-          console.log('Decoded token: ' + JSON.stringify(store.getDecodedUserToken()));
+  doLoginSendMFACode(mfaCode) {
+    // call this after user received and inputted MFA mfaCode
+    var handler = getResultToStateSuccessFailureHandlerObj('Login, send MFA code', this.state, 'authenticationResult');
+    handler['mfaRequired'] = function() {
+      alert("This should never happen - require MFA code after sending MFA code!!");
+    };
+    this.state.cognitoUser.sendMFACode(mfaCode, handler);
+  },
 
-          // step 2: refresh credential with identity pool
+  doCognitoUserRefresh() {
+    var callback = getResultToCallbackHandler("CognitoUser.refreshSession",result=>{});
+    this.state.cognitoUser.refreshSession(this.state.cognitoUser.signInUserSession.refreshToken,callback);
+  },
 
-          var loginMap = {};
-          var providerKey = 'cognito-idp.' +
-            store.config.cognito_region +
-            '.amazonaws.com/' +
-            store.config.cognito_user_pool_id;
-          loginMap[providerKey] = result.getIdToken().getJwtToken();
-          // see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#getId-property
-          AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: store.config.cognito_identity_pool_id,
-            Logins: loginMap
-          });
-          //refreshes credentials using AWS.CognitoIdentity.getCredentialsForIdentity()
-          AWS.config.credentials.refresh((error) => {
-            if (error) {
-              res += "/REFRESH FAIL";
-              detail = "Refresh error:" + error.message;
-              console.log("Refresh error:" + JSON.stringify(error));
-            } else {
-              // Instantiate aws sdk service objects now that the credentials have been updated.
-              // example: var s3 = new AWS.S3();
-              res += "/REFRESH SUCCESS";
-              console.log('Refresh success');
-            }
-          });
-          callback(res, detail);
-        } // return function (result) {
-      }(this, callback),
-      onFailure: function(callback) {
-        return function(err) {
-          console.log('Login Fail:' + JSON.stringify(err));
-          callback('LOGIN FAIL', err.message);
-        };
-      }(callback)
-    }); // cognitoUser.authenticateUser(authenticationDetails, {
+  doIdRefresh() {
+    var loginMap = {};
+    var providerKey = 'cognito-idp.' +
+      this.config.cognito_region +
+      '.amazonaws.com/' +
+      this.config.cognito_user_pool_id;
+    loginMap[providerKey] = this.state.authenticationResult.idToken.jwtToken;
+    // see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#getId-property
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: this.config.cognito_identity_pool_id,
+      Logins: loginMap
+    });
+    //refreshes credentials using AWS.CognitoIdentity.getCredentialsForIdentity()
+    AWS.config.credentials.refresh(
+      getResultToStateHandler('ID Pool Refresh',this.state,'idRefreshResult')
+    );
   },
 
   doLogout() {
@@ -132,15 +143,17 @@ export default {
   },
 
   doRequestVerifyAttributeCode(attributeName) {
-    var handler = getGenericHandler("Request verification code for "+attributeName);
-    handler['inputVerificationCode'] = undefined;
+    var handler = getResultToStateSuccessFailureHandlerObj("Request verification code for "+attributeName);
+    // 'inputVerificationCode' handler is required to set but can be "null"
+    // in that case, success handler will be called after verification code is sent
+    handler['inputVerificationCode'] = null;
     this.state.cognitoUser.getAttributeVerificationCode(attributeName, handler);
   },
 
   doVerifyAttribute(attributeName, verificationCode) {
     this.state.cognitoUser.verifyAttribute(
       attributeName, verificationCode,
-      getGenericHandler("Verify attribute "+attributeName));
+      getResultToStateSuccessFailureHandlerObj("Verify attribute "+attributeName));
   },
 
   getMFAOptions() {

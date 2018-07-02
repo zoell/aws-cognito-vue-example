@@ -1,9 +1,9 @@
-export function getGenericCallbackHandler(actionDesc, callback) {
+export function getSuccessFailureHandlerObj(actionDesc, onSuccessCallback) {
   return {
       onSuccess: function (result) {
           alert(actionDesc+" :SUCCESS, result=" + JSON.stringify(result));
           console.log(actionDesc+' :Success, ' + JSON.stringify(result));
-          callback(result);
+          onSuccessCallback(result);
       },
       onFailure: function(err) {
           alert(actionDesc+" :FAILED, "+(err.message || JSON.stringify(err)));
@@ -12,8 +12,8 @@ export function getGenericCallbackHandler(actionDesc, callback) {
   };
 };
 
-export function getGenericHandler(actionDesc, stateObj, stateName) {
-  return getGenericCallbackHandler(
+export function getResultToStateSuccessFailureHandlerObj(actionDesc, stateObj, stateName) {
+  return getSuccessFailureHandlerObj(
     actionDesc,
     result=>{
       if (stateObj)

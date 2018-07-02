@@ -19,7 +19,7 @@
 
 <script>
 
-var {getGenericHandler,getResultToStateHandler} = require('../utils')
+var {getResultToStateSuccessFailureHandlerObj,getResultToStateHandler} = require('../utils')
 
 export default {
   data () {
@@ -50,7 +50,7 @@ export default {
       // see https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
       // use case 18. retrieve user devices
       this.appStore.state.cognitoUser.listDevices(
-        55,null,getGenericHandler('List user device',this,'userDevices')
+        55,null,getResultToStateSuccessFailureHandlerObj('List user device',this,'userDevices')
       );
     },
 

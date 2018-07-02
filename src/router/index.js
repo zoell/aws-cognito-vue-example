@@ -5,6 +5,8 @@ import Login from '@/components/Login'
 import Welcome from '@/components/Welcome'
 import Attribute from '@/components/Attribute'
 import MFA from '@/components/MFA'
+import CognitoUser from '@/components/CognitoUser'
+import IDPool from '@/components/IDPool'
 
 Vue.use(Router)
 
@@ -30,6 +32,17 @@ export default new Router({
       name: 'MFA',
       component: MFA
     },
+    {
+      path: '/CognitoUser',
+      name: 'CognitoUser',
+      component: CognitoUser
+    },
+    {
+      path: '/IDPool',
+      name: 'IDPool',
+      component: IDPool
+    },
+
     {
       path: '/',
       name: 'Welcome',

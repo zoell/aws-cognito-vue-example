@@ -3,13 +3,15 @@
 <h1>{{ msg }}</h1></br>
 <button v-on:click="gotoPage('/')"> Home </button> |
 <button v-on:click="gotoPage('/SignUp')"> Sign Up </button> |
-<button v-on:click="gotoPage('/Login')"> Login In </button> |
-<template v-if="notAuthenticated">(Authenticate First)</template>
-<button v-on:click="gotoPage('/Attribute')"> Attributes </button>
+<button v-on:click="gotoPage('/Login')"> Login In </button> <br/>
+<template v-if="notAuthenticated">(Not Authenticated)</template>
+<button v-on:click="gotoPage('/CognitoUser')"> CognitoUser Obj </button> | 
+<button v-on:click="gotoPage('/IDPool')"> ID Pool </button> |
+<button v-on:click="gotoPage('/Attribute')"> Attributes </button> |
 <button v-on:click="gotoPage('/MFA')"> MFA </button>
 
-<button v-on:click="signOut"> Logout </button>
-Hi, {{userName}}
+<hr/>
+Hi, {{userName}} <button v-on:click="signOut"> Logout </button><br/>
 <hr/>
 </div>
 </template>
@@ -37,12 +39,7 @@ export default {
         (!this.appStore.state.cognitoUser.signInUserSession));
     },
     userName : function() {
-      if (this.appStore.state.userToken)
-        return this.appStore.getDecodedUserToken().username;
-      else if (this.appStore.state.cognitoUser)
-        return this.appStore.state.cognitoUser.username;
-      else
-        return 'guest';
+      return (this.appStore.state.cognitoUser && this.appStore.state.cognitoUser.username) || 'guest';
     }
   }
 }
