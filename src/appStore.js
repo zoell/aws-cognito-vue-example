@@ -149,25 +149,4 @@ export default {
       attributeName, verificationCode,
       getResultToStateSuccessFailureHandlerObj("Verify attribute "+attributeName));
   },
-
-  doTOTPSetup() {
-    // set up doTOTP
-    // prepare the handler
-    var handler = getResultToStateSuccessFailureHandlerObj('Setup TOTP', this.state, 'authenticationResult');
-    handler['mfaSetup'] = result=>{alert("This should not happen - mfaSetup")};
-    handler['selectMFAType'] = function(cognitoUser){return function(challengeName, challengeParameters) {
-        var mfaType = prompt('Please select the MFA method.', '');
-        cognitoUser.sendMFASelectionAnswer(mfaType, this);
-    }}(this.state.cognitoUser);
-    handler['associateSecretCode'] =  function(cognitoUser){return function(secretCode) {
-        var challengeAnswer = prompt('Please input the TOTP code. Secret is:'+secretCode ,'');
-        cognitoUser.verifySoftwareToken(challengeAnswer, 'My TOTP device', this);
-    }}(this.state.cognitoUser);
-    handler['totpRequired'] =  function(cognitoUser){return function(secretCode) {
-        var challengeAnswer = prompt('Please input the TOTP code. Secret is:'+secretCode ,'');
-        cognitoUser.sendMFACode(challengeAnswer, this, 'SOFTWARE_TOKEN_MFA');
-    }}(this.state.cognitoUser);
-    // associate software token
-    this.state.cognitoUser.associateSoftwareToken(handler);
-  },
 }

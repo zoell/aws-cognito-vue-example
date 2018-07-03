@@ -7,13 +7,17 @@
     <button v-on:click='fetchAttributes'>Get User Attributes</button>
     <button v-on:click='fetchDevices'>List Devices</button>
     <button v-on:click='updateAttribute'>Update Attributes</button>
+    <button v-on:click='getUser'>Call getUser</button>
+
     </br>
     <button v-on:click='requestCodeForPhone'>Send SMS Code</button>
     <input v-model="smsCode"></input>
     <button v-on:click='verifyPhone'>Verify Phone</button>
     <hr/>
-    User Attributes:<b-table striped hover :items="userAttributes"></b-table><br/>
-    User Devices:<b-table striped hover :items="userDevicesAsArray"></b-table>
+    User Attributes:<b-table striped hover :items="userAttributes"></b-table><hr/>
+    User Devices:<b-table striped hover :items="userDevicesAsArray"></b-table><hr/>
+    AWS.CognitoIdentityServiceProvider.getUser Result:<br/>
+    {{JSON.stringify(getUserResult)}}
   </div>
 </template>
 
@@ -27,6 +31,7 @@ export default {
       name:undefined,
       userAttributes:undefined,
       userDevices:undefined,
+      getUserResult:undefined,
       address: undefined,
       phone: undefined,
       smsCode: undefined,
@@ -79,6 +84,16 @@ export default {
 
     verifyPhone: function(event) {
       this.appStore.doVerifyAttribute('phone_number', this.smsCode);
+    },
+
+    getUser: function(event) {
+      var provider = new window.AWS.CognitoIdentityServiceProvider();
+      var accessToken = this.appStore.state.cognitoUser.signInUserSession.accessToken.jwtToken;
+      var params = {
+        AccessToken: accessToken
+      };
+      var handler = getResultToStateHandler("Call getUser",this,'getUserResult');
+      provider.getUser(params,handler);
     }
   },
 

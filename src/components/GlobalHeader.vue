@@ -20,7 +20,7 @@ Hi, {{userName}} <button v-on:click="signOut"> Logout </button><br/>
 export default {
   data () {
     return {
-      msg: 'Welcome to VSC Ecosystem',
+      msg: 'Welcome to Bing\'s AWS Cognito Demo',
       appStore : window.appStore
     }
   },
