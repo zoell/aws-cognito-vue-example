@@ -21,6 +21,12 @@ export default {
   },
   config: rtConfig,
 
+  isAuthenticated() {
+    return this.state.cognitoUser &&
+      this.state.cognitoUser.signInUserSession &&
+      this.state.cognitoUser.signInUserSession.isValid();
+  },
+
   getAccessTokenFromAuthenticationResult(decode) {
     if (this.state.authenticationResult !== undefined) {
       return decode ?
@@ -71,10 +77,7 @@ export default {
   // See https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
   // Use case 4
   // callback will receive {result:..., detail:...}
-  doLogin(username, password, onRequireMfaCallback) {
-    // prepare a handler
-    var handler = getResultToStateSuccessFailureHandlerObj('Login', this.state, 'authenticationResult');
-    handler['mfaRequired'] = onRequireMfaCallback;
+  doLogin(username, password, handler) {
     // prepare cognito user for authentication
     var userData = {
       Username: username,
@@ -89,15 +92,6 @@ export default {
     var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
     // do authentication
     this.state.cognitoUser.authenticateUser(authenticationDetails, handler);
-  },
-
-  doLoginSendMFACode(mfaCode) {
-    // call this after user received and inputted MFA mfaCode
-    var handler = getResultToStateSuccessFailureHandlerObj('Login, send MFA code', this.state, 'authenticationResult');
-    handler['mfaRequired'] = function() {
-      alert("This should never happen - require MFA code after sending MFA code!!");
-    };
-    this.state.cognitoUser.sendMFACode(mfaCode, handler);
   },
 
   doCognitoUserRefresh() {
@@ -156,21 +150,24 @@ export default {
       getResultToStateSuccessFailureHandlerObj("Verify attribute "+attributeName));
   },
 
-  getMFAOptions() {
-    this.state.cognitoUser.getMFAOptions(
-      getResultToStateHandler('Get MFA Options',this.state,'mfaOptions')
-    );
+  doTOTPSetup() {
+    // set up doTOTP
+    // prepare the handler
+    var handler = getResultToStateSuccessFailureHandlerObj('Setup TOTP', this.state, 'authenticationResult');
+    handler['mfaSetup'] = result=>{alert("This should not happen - mfaSetup")};
+    handler['selectMFAType'] = function(cognitoUser){return function(challengeName, challengeParameters) {
+        var mfaType = prompt('Please select the MFA method.', '');
+        cognitoUser.sendMFASelectionAnswer(mfaType, this);
+    }}(this.state.cognitoUser);
+    handler['associateSecretCode'] =  function(cognitoUser){return function(secretCode) {
+        var challengeAnswer = prompt('Please input the TOTP code. Secret is:'+secretCode ,'');
+        cognitoUser.verifySoftwareToken(challengeAnswer, 'My TOTP device', this);
+    }}(this.state.cognitoUser);
+    handler['totpRequired'] =  function(cognitoUser){return function(secretCode) {
+        var challengeAnswer = prompt('Please input the TOTP code. Secret is:'+secretCode ,'');
+        cognitoUser.sendMFACode(challengeAnswer, this, 'SOFTWARE_TOKEN_MFA');
+    }}(this.state.cognitoUser);
+    // associate software token
+    this.state.cognitoUser.associateSoftwareToken(handler);
   },
-
-  enableMFA() {
-      this.state.cognitoUser.enableMFA(
-        getResultToCallbackHandler('Enable MFA',result=>{})
-      );
-  },
-
-  disableMFA() {
-      this.state.cognitoUser.disableMFA(
-        getResultToCallbackHandler('Disable MFA',result=>{})
-      );
-  }
 }

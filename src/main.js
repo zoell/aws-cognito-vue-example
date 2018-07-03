@@ -8,13 +8,17 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import GlobalHeader from './components/GlobalHeader'
+import MFAChallengeResponse from './components/MFAChallengeResponse'
 import appStore from './appStore'
+import VueQrcode from '@xkeshi/vue-qrcode'
 
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false
 
 // Global components
-Vue.component('globalheader', GlobalHeader)
+Vue.component('Globalheader', GlobalHeader)
+Vue.component('MFAChallengeResponse', MFAChallengeResponse)
+Vue.component(VueQrcode.name, VueQrcode)
 
 // initialize single application store
 window.appStore = appStore;

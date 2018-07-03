@@ -13,6 +13,7 @@
     "test": "npm run unit && npm run e2e"
   },
   "dependencies": {
+    "@xkeshi/vue-qrcode": "^1.0.0",
     "amazon-cognito-identity-js": "^2.0.11",
     "aws-sdk": "^2.263.1",
     "bootstrap": "^4.0.0-beta.2",

@@ -2,9 +2,9 @@
   <div>
     Name: <input v-model="name"></input></br>
     Address: <input v-model="address"></input></br>
-    Phone Number:<input v-model="phone"></input></br>
+    Phone Number (+xx xxxxxxxxx): <input v-model="phone"></input></br>
     <hr/>
-    <button v-on:click='fetchAttributes'>See User Info</button>
+    <button v-on:click='fetchAttributes'>Get User Attributes</button>
     <button v-on:click='fetchDevices'>List Devices</button>
     <button v-on:click='updateAttribute'>Update Attributes</button>
     </br>

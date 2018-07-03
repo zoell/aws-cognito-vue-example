@@ -4,8 +4,8 @@
 <button v-on:click="gotoPage('/')"> Home </button> |
 <button v-on:click="gotoPage('/SignUp')"> Sign Up </button> |
 <button v-on:click="gotoPage('/Login')"> Login In </button> <br/>
-<template v-if="notAuthenticated">(Not Authenticated)</template>
-<button v-on:click="gotoPage('/CognitoUser')"> CognitoUser Obj </button> | 
+<template v-if="!appStore.isAuthenticated()">(Not Authenticated)</template>
+<button v-on:click="gotoPage('/CognitoUser')"> CognitoUser Obj </button> |
 <button v-on:click="gotoPage('/IDPool')"> ID Pool </button> |
 <button v-on:click="gotoPage('/Attribute')"> Attributes </button> |
 <button v-on:click="gotoPage('/MFA')"> MFA </button>
@@ -34,10 +34,6 @@ export default {
     }
   },
   computed : {
-    notAuthenticated : function() {
-      return ((!this.appStore.state.cognitoUser) ||
-        (!this.appStore.state.cognitoUser.signInUserSession));
-    },
     userName : function() {
       return (this.appStore.state.cognitoUser && this.appStore.state.cognitoUser.username) || 'guest';
     }

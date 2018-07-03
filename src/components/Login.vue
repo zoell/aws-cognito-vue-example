@@ -1,35 +1,34 @@
 <template>
   <div>
-  <template v-if="notAuthenticated">
+  <template v-if="!appStore.isAuthenticated()">
     Username:<input v-model="username" placeholder="username"><br/>
     Password:<input v-model="password"><br/>
     <button v-on:click="loginCognito">Login</button>
-    <template v-if="showSecondFactorInput">
-    <br/>Second factor required: <input v-model="secondFactor">
-    <button v-on:click="verifySecondFactor">Verify</button>
-    </template>
+    <MFAChallengeResponse ref="mfaChaRes"
+      actionDesc="Login with possible MFA"
+      :onSuccessHandler="getOnSuccessHandler()"></MFAChallengeResponse>
   </template>
   <template v-else>You have already loged in. Logout first.
   </template>
   <hr/>
-  Authentication Result Object - ID Token: <br/>
+  Last Authentication Result Object - ID Token: <br/>
   {{appStore.getIdTokenFromAuthenticationResult(false)}}<br/>
   ID Token Decoded: <br/>
   <pre>{{appStore.getIdTokenFromAuthenticationResult(true)}}</pre><br/>
   <hr/>
-  Authentication Result Object - Access Token: <br/>
+  Last Authentication Result Object - Access Token: <br/>
   {{appStore.getAccessTokenFromAuthenticationResult(false)}}<br/>
   Access Token Decoded: <br/>
   <pre>{{appStore.getAccessTokenFromAuthenticationResult(true)}}</pre><br/>
   <hr/>
-  Authentication Result Object - Refresh Token: <br/>
+  Last Authentication Result Object - Refresh Token: <br/>
   {{appStore.getRefreshTokenFromAuthenticationResult(false)}}<br/>
   </div>
 </template>
 
 <script>
-// Refer to use case 4 at https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
 
+// Refer to use case 4 at https://github.com/aws/aws-amplify/tree/master/packages/amazon-cognito-identity-js/
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 export default {
   data () {
@@ -42,27 +41,19 @@ export default {
     }
   },
   methods: {
+    getOnSuccessHandler: function(){
+      var thisObj = this;
+      return (result)=>{
+        thisObj.appStore.state.authenticationResult = result;
+      }
+    },
     loginCognito: function (event) {
       this.appStore.doLogin(
         this.username,
         this.password,
-        function(thisObj) {
-          // return callback upon request of second factor
-          return function() {
-            thisObj.showSecondFactorInput = true;
-          }
-        }(this));
+        this.$refs.mfaChaRes.handler);
     },
-    verifySecondFactor: function(event){
-      this.appStore.doLoginSendMFACode(this.secondFactor);
-    }
   },
-  computed: {
-    notAuthenticated : function() {
-      return ((!this.appStore.state.cognitoUser) ||
-        (!this.appStore.state.cognitoUser.signInUserSession));
-    },
-  }
 }
 
 </script>

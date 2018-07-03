@@ -3,7 +3,8 @@ export function getSuccessFailureHandlerObj(actionDesc, onSuccessCallback) {
       onSuccess: function (result) {
           alert(actionDesc+" :SUCCESS, result=" + JSON.stringify(result));
           console.log(actionDesc+' :Success, ' + JSON.stringify(result));
-          onSuccessCallback(result);
+          if (onSuccessCallback)
+            onSuccessCallback(result);
       },
       onFailure: function(err) {
           alert(actionDesc+" :FAILED, "+(err.message || JSON.stringify(err)));
@@ -31,7 +32,8 @@ export function getResultToCallbackHandler(actionDesc, callback) {
     }
     console.log(actionDesc+': SUCCESS, result=' + JSON.stringify(result));
     alert(actionDesc+": SUCCESS, result="+JSON.stringify(result));
-    callback(result);
+    if (callback)
+      callback(result);
   }
 }
 
