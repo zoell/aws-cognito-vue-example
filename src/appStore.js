@@ -16,6 +16,7 @@ AWS.config.region = rtConfig.cognito_region;
 export default {
   state: {
     authenticationResult: undefined,
+    lastSignUpResult:undefined,
     cognitoUser: undefined,
     mfaOptions: undefined,
   },
@@ -68,7 +69,10 @@ export default {
       getResultToCallbackHandler(
         'Sign up',
         function(state){
-          return function(result){state.cognitoUser = result.user;}
+          return function(result){
+            state.lastSignUpResult = result;
+            state.cognitoUser = result.user;
+          }
         }(this.state)
       )
     );
@@ -92,6 +96,18 @@ export default {
     var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
     // do authentication
     this.state.cognitoUser.authenticateUser(authenticationDetails, handler);
+  },
+
+  doForgotPassword(username, handlerObj) {
+    // prepare cognito user for authentication
+    var userData = {
+      Username: username,
+      Pool: cognitoUserPool
+    };
+    this.state.cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+    // do retrieve password
+    this.state.cognitoUser.forgotPassword(handlerObj);
+
   },
 
   doCognitoUserRefresh() {

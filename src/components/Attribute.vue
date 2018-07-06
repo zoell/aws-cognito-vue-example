@@ -1,18 +1,30 @@
 <template>
   <div>
-    Name: <input v-model="name"></input></br>
-    Address: <input v-model="address"></input></br>
-    Phone Number (+xx xxxxxxxxx): <input v-model="phone"></input></br>
+    Update Attrinutes:<br/>
+    <b-table striped hover :items="attributesToUpdate"></b-table><br/>
+    <select v-model="selectedAttributeToUpdate" v-on:change="attributeValueToUpdate=undefined">
+      <option v-for="option in updateAttributeOptions" v-bind:value="option.value">
+      {{option.text}}
+      </option>
+    </select>
+    <input v-model="attributeValueToUpdate"></input>
+    <button v-on:click='addAttributeToUpdate'>Add</button>
+    <button v-on:click='attributesToUpdate=[]'>Reset</button>
+    <button v-on:click='updateAttribute'>Update Attributes</button>
+    <hr/>
+    Verify Attributes:<br/>
+    <select v-model="selectAttributeToVerify">
+      <option v-for="option in verifyAttributeOptions" v-bind:value="option.value">
+      {{option.text}}
+      </option>
+    </select>
+    <button v-on:click='requestAttributeVerificationCode'>Send/Resend Verification Code</button>
+    <input v-model="attributeVerificationCode"></input>
+    <button v-on:click='verifyAttribute'>Verify Attribute</button>
     <hr/>
     <button v-on:click='fetchAttributes'>Get User Attributes</button>
     <button v-on:click='fetchDevices'>List Devices</button>
-    <button v-on:click='updateAttribute'>Update Attributes</button>
     <button v-on:click='getUser'>Call getUser</button>
-
-    </br>
-    <button v-on:click='requestCodeForPhone'>Send SMS Code</button>
-    <input v-model="smsCode"></input>
-    <button v-on:click='verifyPhone'>Verify Phone</button>
     <hr/>
     User Attributes:<b-table striped hover :items="userAttributes"></b-table><hr/>
     User Devices:<b-table striped hover :items="userDevicesAsArray"></b-table><hr/>
@@ -28,13 +40,30 @@ var {getResultToStateSuccessFailureHandlerObj,getResultToStateHandler} = require
 export default {
   data () {
     return {
-      name:undefined,
+      attributesToUpdate:[],
+      selectedAttributeToUpdate:undefined,
+      attributeValueToUpdate:undefined,
+      updateAttributeOptions:[
+        { text: 'Name', value: 'name'},
+        { text: 'Address', value: 'address'},
+        { text: 'Phone (+xx xxx)', value: 'phone_number'},
+        { text: 'Email', value: 'email'},
+        { text: 'Birth Date', value: 'birthdate'},
+        { text: 'Preferred Username', value: 'preferred_username'},
+        { text: 'Family Name', value: 'family_name'},
+        { text: 'Given Name', value: 'given_name'},
+        { text: 'Gender', value: 'gender'},
+        { text: 'Middle Name', value: 'middle_name'},
+      ],
+      verifyAttributeOptions:[
+        { text: 'Phone (+xx xxx)', value: 'phone_number'},
+        { text: 'Email', value: 'email'},
+      ],
       userAttributes:undefined,
       userDevices:undefined,
       getUserResult:undefined,
-      address: undefined,
-      phone: undefined,
-      smsCode: undefined,
+      selectAttributeToVerify:undefined,
+      attributeVerificationCode: undefined,
       appStore:window.appStore,
     }
   },
@@ -59,31 +88,29 @@ export default {
       );
     },
 
+    addAttributeToUpdate: function(event) {
+      this.attributesToUpdate.push(
+        {Name:this.selectedAttributeToUpdate, Value:this.attributeValueToUpdate}
+      );
+      this.selectedAttributeToUpdate = undefined;
+      this.attributeValueToUpdate = undefined;
+    },
+
     updateAttribute: function(event) {
-      var attributes =
-      [
-        {
-          Name: 'name',
-          Value: this.name
-        },
-        {
-          Name: 'address',
-          Value: this.address
-        },
-        {
-          Name: 'phone_number',
-          Value: this.phone
-        }
-      ];
-      this.appStore.doUpdateAttribute(attributes);
+      this.appStore.doUpdateAttribute(this.attributesToUpdate);
+      this.attributesToUpdate = [];
     },
 
-    requestCodeForPhone: function(event) {
-      this.appStore.doRequestVerifyAttributeCode('phone_number');
+    requestAttributeVerificationCode: function(event) {
+      this.appStore.doRequestVerifyAttributeCode(this.selectAttributeToVerify);
     },
 
-    verifyPhone: function(event) {
-      this.appStore.doVerifyAttribute('phone_number', this.smsCode);
+    verifyAttribute: function(event) {
+      this.appStore.doVerifyAttribute(
+        this.selectAttributeToVerify,
+        this.attributeVerificationCode);
+      this.selectAttributeToVerify = undefined;
+      this.attributeVerificationCode = undefined;
     },
 
     getUser: function(event) {

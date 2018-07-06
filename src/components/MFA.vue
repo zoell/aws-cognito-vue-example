@@ -7,10 +7,16 @@
   Current MFA options: {{mfaOptionsStr}} <br/>
   <hr/>
   Call cognitoUser.setUserMfaPreference API:<br/>
+  <input type="checkbox" v-model="includeSms">Setup SMS MFA</input>
+  <template v-if="includeSms">
   <input type="checkbox" v-model="smsEnable">Enable SMS</input>
-  <input type="checkbox" v-model="smsPrefer">Prefer SMS</input><br/>
+  <input type="checkbox" v-model="smsPrefer">Prefer SMS</input>
+  </template><br/>
+  <input type="checkbox" v-model="includeTOTP">Setup TOTP MFA</input>
+  <template v-if="includeTOTP">
   <input type="checkbox" v-model="totpEnable">Enable TOTP</input>
-  <input type="checkbox" v-model="totpPrefer">Prefer TOTP</input><br/>
+  <input type="checkbox" v-model="totpPrefer">Prefer TOTP</input>
+  </template><br/>
   <button v-on:click="setUserMfaPreference">Set MFA Preference</button>
   <hr/>
   <button v-on:click="associateSoftwareToken">Associate Software Token (Google Authenticator)</button>
@@ -27,6 +33,8 @@ var {getResultToCallbackHandler,getResultToStateHandler} = require('../utils');
 export default {
   data () {
     return {
+      includeSms:false,
+      includeTOTP:false,
       smsEnable:false,
       totpEnable:false,
       smsPrefer:false,
@@ -52,11 +60,11 @@ export default {
     },
     setUserMfaPreference: function(event) {
       var handler = getResultToCallbackHandler('Set User MFA Preference');
-      var smsMfaSettings = this.smsEnable ? {
+      var smsMfaSettings = this.includeSms? {
         PreferredMfa : this.smsPrefer,
         Enabled : this.smsEnable
       } : null;
-      var totpMfaSettings = this.totpEnable? {
+      var totpMfaSettings = this.includeTOTP? {
         PreferredMfa : this.totpPrefer,
         Enabled : this.totpEnable
       } : null;

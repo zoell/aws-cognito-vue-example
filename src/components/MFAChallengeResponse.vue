@@ -1,9 +1,5 @@
 <template>
   <div>
-    <template v-if="mode === 'mfaSetup'">
-    Why? I'm asked to setup MFA?
-    </template>
-
     <template v-if="mode === 'associateSecretCode'">
     Use secret code below to add an item into your Google Authenticator<br/>
     Secret code is: {{secretCode}}<br>
@@ -28,7 +24,7 @@
 
     <template v-if="mode === 'totpRequired'">
     Open your Authenticator & input the verification code below:<br/>
-    Secret code passed as parameter is: {{secretCode}}<br/>
+    Secret code (should be empty): {{secretCode}}<br/>
     <input v-model="mfaAnswer"></input>
     <button v-on:click="sendMFACode('SOFTWARE_TOKEN_MFA')">Verify</button>
     </template>
@@ -58,9 +54,10 @@ export default {
   mounted: function(){
     // get the handler for login or set up software token
     var handler = getSuccessFailureHandlerObj(this.actionDesc, this.onSuccessHandler);
-    // not sure when this is called but just put it here
+    // just initiate TOTP when challenged to do MFA setup
     handler['mfaSetup'] = function(thisObj){return function(){
-      thisObj.mode='mfaSetup';
+      // this is not tested...
+      thisObj.appStore.state.cognitoUser.associateSoftwareToken(thisObj.handler);
     }}(this);
     // be given a secret code from server, shall request an answer from user to
     // finalise software token setup, so clear the input

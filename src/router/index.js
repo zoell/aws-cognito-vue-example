@@ -7,6 +7,9 @@ import Attribute from '@/components/Attribute'
 import MFA from '@/components/MFA'
 import CognitoUser from '@/components/CognitoUser'
 import IDPool from '@/components/IDPool'
+import PasswdDelAcc from '@/components/PasswdDelAcc'
+import ForgotPassword from '@/components/ForgotPassword'
+import Greetings from '@/components/Greetings'
 
 Vue.use(Router)
 
@@ -21,6 +24,11 @@ export default new Router({
       path: '/Login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/ForgotPassword',
+      name: 'ForgotPassword',
+      component: ForgotPassword
     },
     {
       path: '/Attribute',
@@ -42,7 +50,16 @@ export default new Router({
       name: 'IDPool',
       component: IDPool
     },
-
+    {
+      path: '/PasswdDelAcc',
+      name: 'PasswdDelAcc',
+      component: PasswdDelAcc
+    },
+    {
+      path: '/Greetings',
+      name: 'Greetings',
+      component: Greetings
+    },
     {
       path: '/',
       name: 'Welcome',
