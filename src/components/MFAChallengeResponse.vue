@@ -4,8 +4,8 @@
     Use secret code below to add an item into your Google Authenticator<br/>
     Secret code is: {{secretCode}}<br>
     <qrcode v-bind:value="secretCodeUri" :options="{size:200}"></qrcode><br/>
-    Name your Authenticator decice: <input v-model="deviceName"></input><br/>
-    Code from your Authenticator: <input v-model="mfaAnswer"></input><br/>
+    Name your Authenticator decice: <input v-model="deviceName"><br/>
+    Code from your Authenticator: <input v-model="mfaAnswer"><br/>
     <button v-on:click="verifySoftwareToken">Verify Authenticator Code & Complete TOTP Setup</button>
     </template>
 
@@ -18,14 +18,14 @@
 
     <template v-if="mode === 'mfaRequired'">
     You are sent an SMS with a verification code, input it below:<br/>
-    <input v-model="mfaAnswer"></input>
+    <input v-model="mfaAnswer">
     <button v-on:click="sendMFACode('SMS_MFA')">Verify</button>
     </template>
 
     <template v-if="mode === 'totpRequired'">
     Open your Authenticator & input the verification code below:<br/>
     Secret code (should be empty): {{secretCode}}<br/>
-    <input v-model="mfaAnswer"></input>
+    <input v-model="mfaAnswer">
     <button v-on:click="sendMFACode('SOFTWARE_TOKEN_MFA')">Verify</button>
     </template>
   </div>

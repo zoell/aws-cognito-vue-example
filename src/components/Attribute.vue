@@ -3,23 +3,23 @@
     Update Attrinutes:<br/>
     <b-table striped hover :items="attributesToUpdate"></b-table><br/>
     <select v-model="selectedAttributeToUpdate" v-on:change="attributeValueToUpdate=undefined">
-      <option v-for="option in updateAttributeOptions" v-bind:value="option.value">
+      <option v-for="option in updateAttributeOptions" v-bind:key="option.value" v-bind:value="option.value">
       {{option.text}}
       </option>
     </select>
-    <input v-model="attributeValueToUpdate"></input>
+    <input v-model="attributeValueToUpdate">
     <button v-on:click='addAttributeToUpdate'>Add</button>
     <button v-on:click='attributesToUpdate=[]'>Reset</button>
     <button v-on:click='updateAttribute'>Update Attributes</button>
     <hr/>
     Verify Attributes:<br/>
     <select v-model="selectAttributeToVerify">
-      <option v-for="option in verifyAttributeOptions" v-bind:value="option.value">
+      <option v-for="option in verifyAttributeOptions" v-bind:key="option.value" v-bind:value="option.value">
       {{option.text}}
       </option>
     </select>
     <button v-on:click='requestAttributeVerificationCode'>Send/Resend Verification Code</button>
-    <input v-model="attributeVerificationCode"></input>
+    <input v-model="attributeVerificationCode">
     <button v-on:click='verifyAttribute'>Verify Attribute</button>
     <hr/>
     <button v-on:click='fetchAttributes'>Get User Attributes</button>

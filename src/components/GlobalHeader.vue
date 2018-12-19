@@ -1,6 +1,6 @@
 <template>
 <div>
-<h1>{{ msg }}</h1></br>
+<h1>{{ msg }}</h1><br/>
 <button v-on:click="gotoPage('/')"> Home </button> |
 <button v-on:click="gotoPage('/SignUp')"> Sign Up </button> |
 <button v-on:click="gotoPage('/Login')"> Login In </button> |

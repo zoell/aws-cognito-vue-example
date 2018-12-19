@@ -1,0 +1,134 @@
+{
+  "data": {
+    "event": {
+      "resource": "/greet",
+      "path": "/greet",
+      "httpMethod": "GET",
+      "headers": {
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Authorization": "eyJraWQiOiI1eHFHaGx2WEo3MmRTT2V3NThnd0dkVTVob3BVXC9sVjJpZVR4UHRGaWpyTT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJkNTQ0MzljNi1mZDU5LTRlYzEtYTliYi02YTA4YzRjNmM4YjIiLCJhdWQiOiIxZWwxazE1dTc1ZGt1cGd0Y24waDI0YnBkaSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTUzNzYyNzkzNCwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tXC91cy1lYXN0LTFfVk15NGg4VDBTIiwicGhvbmVfbnVtYmVyX3ZlcmlmaWVkIjp0cnVlLCJjb2duaXRvOnVzZXJuYW1lIjoiYmluZ3RpbXJlbiIsInBob25lX251bWJlciI6Iis2MTQ4MTE1ODE1MCIsImV4cCI6MTUzNzYzMTUzNCwiaWF0IjoxNTM3NjI3OTM0LCJlbWFpbCI6ImJpbmcucmVuQGVhc3RpcC5jb20ifQ.IZmJt2Veo_I8Q-jHAoYQHUbMK4hsv8BskUjhw-KFPomwIiZkQWIVQ1Cg6C6Yie0JjsEdFBCkNYkIUhDLYfmIfMaqwFEcapSdrjacciczw47BfvQzI-bqi3cl6d9Nzj4J0JRg8rQuH01jnep-c2SgGm47mjcYxyg5lRUj2GVq93vso3dGawSQ-bgjzQsAzl_mt49KCuxieaD0LIHcJi8arWRyKGaNDCdIba23kabVxcIvqAR2ZF_EwQB5ufxOeQEQG8cYfujoKHBqNGs-4GH5UZsjlC7I9StBA6O29m75oNN2Gze0UvX7zxiNiRTV1XADydZZxo4geGbusnzXOoX46Q",
+        "CloudFront-Forwarded-Proto": "https",
+        "CloudFront-Is-Desktop-Viewer": "true",
+        "CloudFront-Is-Mobile-Viewer": "false",
+        "CloudFront-Is-SmartTV-Viewer": "false",
+        "CloudFront-Is-Tablet-Viewer": "false",
+        "CloudFront-Viewer-Country": "TW",
+        "Host": "v3vnrewmf8.execute-api.us-east-1.amazonaws.com",
+        "origin": "http://localhost:8080",
+        "Referer": "http://localhost:8080/",
+        "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0",
+        "Via": "2.0 8a18fbab7a9da536a4db20246301b330.cloudfront.net (CloudFront)",
+        "X-Amz-Cf-Id": "hZTbnhuijeOBKRXT-5y4Vlf9VgeVlEflar-Z5XS38OEh0dHy2WY6MA==",
+        "X-Amzn-Trace-Id": "Root=1-5ba65726-5cd04c7ca89397944b40f93e",
+        "X-Forwarded-For": "123.193.54.243, 54.182.213.18",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+      },
+      "multiValueHeaders": {
+        "Accept": ["application/json, text/plain, */*"],
+        "Accept-Encoding": ["gzip, deflate, br"],
+        "Accept-Language": ["en-US,en;q=0.5"],
+        "Authorization": ["eyJraWQiOiI1eHFHaGx2WEo3MmRTT2V3NThnd0dkVTVob3BVXC9sVjJpZVR4UHRGaWpyTT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJkNTQ0MzljNi1mZDU5LTRlYzEtYTliYi02YTA4YzRjNmM4YjIiLCJhdWQiOiIxZWwxazE1dTc1ZGt1cGd0Y24waDI0YnBkaSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTUzNzYyNzkzNCwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tXC91cy1lYXN0LTFfVk15NGg4VDBTIiwicGhvbmVfbnVtYmVyX3ZlcmlmaWVkIjp0cnVlLCJjb2duaXRvOnVzZXJuYW1lIjoiYmluZ3RpbXJlbiIsInBob25lX251bWJlciI6Iis2MTQ4MTE1ODE1MCIsImV4cCI6MTUzNzYzMTUzNCwiaWF0IjoxNTM3NjI3OTM0LCJlbWFpbCI6ImJpbmcucmVuQGVhc3RpcC5jb20ifQ.IZmJt2Veo_I8Q-jHAoYQHUbMK4hsv8BskUjhw-KFPomwIiZkQWIVQ1Cg6C6Yie0JjsEdFBCkNYkIUhDLYfmIfMaqwFEcapSdrjacciczw47BfvQzI-bqi3cl6d9Nzj4J0JRg8rQuH01jnep-c2SgGm47mjcYxyg5lRUj2GVq93vso3dGawSQ-bgjzQsAzl_mt49KCuxieaD0LIHcJi8arWRyKGaNDCdIba23kabVxcIvqAR2ZF_EwQB5ufxOeQEQG8cYfujoKHBqNGs-4GH5UZsjlC7I9StBA6O29m75oNN2Gze0UvX7zxiNiRTV1XADydZZxo4geGbusnzXOoX46Q"],
+        "CloudFront-Forwarded-Proto": ["https"],
+        "CloudFront-Is-Desktop-Viewer": ["true"],
+        "CloudFront-Is-Mobile-Viewer": ["false"],
+        "CloudFront-Is-SmartTV-Viewer": ["false"],
+        "CloudFront-Is-Tablet-Viewer": ["false"],
+        "CloudFront-Viewer-Country": ["TW"],
+        "Host": ["v3vnrewmf8.execute-api.us-east-1.amazonaws.com"],
+        "origin": ["http://localhost:8080"],
+        "Referer": ["http://localhost:8080/"],
+        "User-Agent": ["Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0"],
+        "Via": ["2.0 8a18fbab7a9da536a4db20246301b330.cloudfront.net (CloudFront)"],
+        "X-Amz-Cf-Id": ["hZTbnhuijeOBKRXT-5y4Vlf9VgeVlEflar-Z5XS38OEh0dHy2WY6MA=="],
+        "X-Amzn-Trace-Id": ["Root=1-5ba65726-5cd04c7ca89397944b40f93e"],
+        "X-Forwarded-For": ["123.193.54.243, 54.182.213.18"],
+        "X-Forwarded-Port": ["443"],
+        "X-Forwarded-Proto": ["https"]
+      },
+      "queryStringParameters": null,
+      "multiValueQueryStringParameters": null,
+      "pathParameters": null,
+      "stageVariables": null,
+      "requestContext": {
+        "resourceId": "xbilha",
+        "authorizer": {
+          "claims": {
+            "sub": "d54439c6-fd59-4ec1-a9bb-6a08c4c6c8b2",
+            "aud": "1el1k15u75dkupgtcn0h24bpdi",
+            "email_verified": "true",
+            "token_use": "id",
+            "auth_time": "1537627934",
+            "iss": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_VMy4h8T0S",
+            "phone_number_verified": "true",
+            "cognito:username": "bingtimren",
+            "phone_number": "+61481158150",
+            "exp": "Sat Sep 22 15:52:14 UTC 2018",
+            "iat": "Sat Sep 22 14:52:14 UTC 2018",
+            "email": "bing.ren@eastip.com"
+          }
+        },
+        "resourcePath": "/greet",
+        "httpMethod": "GET",
+        "extendedRequestId": "NoKOCFRxoAMF2FQ=",
+        "requestTime": "22/Sep/2018:14:52:22 +0000",
+        "path": "/prod/greet",
+        "accountId": "482175935212",
+        "protocol": "HTTP/1.1",
+        "stage": "prod",
+        "requestTimeEpoch": 1537627942680,
+        "requestId": "1cb4da13-be77-11e8-b56f-89d025f7e732",
+        "identity": {
+          "cognitoIdentityPoolId": null,
+          "accountId": null,
+          "cognitoIdentityId": null,
+          "caller": null,
+          "sourceIp": "123.193.54.243",
+          "accessKey": null,
+          "cognitoAuthenticationType": null,
+          "cognitoAuthenticationProvider": null,
+          "userArn": null,
+          "userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0",
+          "user": null
+        },
+        "apiId": "v3vnrewmf8"
+      },
+      "body": null,
+      "isBase64Encoded": false
+    },
+    "context": {
+      "callbackWaitsForEmptyEventLoop": true,
+      "logGroupName": "/aws/lambda/GreetingToAuthenticatedUser",
+      "logStreamName": "2018/09/22/[$LATEST]6389ffb32e7540acafe3030255b6431a",
+      "functionName": "GreetingToAuthenticatedUser",
+      "memoryLimitInMB": "128",
+      "functionVersion": "$LATEST",
+      "invokeid": "1cbb429c-be77-11e8-8d41-ff8d9237405c",
+      "awsRequestId": "1cbb429c-be77-11e8-8d41-ff8d9237405c",
+      "invokedFunctionArn": "arn:aws:lambda:us-east-1:482175935212:function:GreetingToAuthenticatedUser"
+    },
+    "greeting": "Congratulations, bingtimren! You are greeted as an authenticated user."
+  },
+  "status": 200,
+  "statusText": "OK",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "config": {
+    "transformRequest": {},
+    "transformResponse": {},
+    "timeout": 0,
+    "xsrfCookieName": "XSRF-TOKEN",
+    "xsrfHeaderName": "X-XSRF-TOKEN",
+    "maxContentLength": -1,
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Authorization": "eyJraWQiOiI1eHFHaGx2WEo3MmRTT2V3NThnd0dkVTVob3BVXC9sVjJpZVR4UHRGaWpyTT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJkNTQ0MzljNi1mZDU5LTRlYzEtYTliYi02YTA4YzRjNmM4YjIiLCJhdWQiOiIxZWwxazE1dTc1ZGt1cGd0Y24waDI0YnBkaSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTUzNzYyNzkzNCwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tXC91cy1lYXN0LTFfVk15NGg4VDBTIiwicGhvbmVfbnVtYmVyX3ZlcmlmaWVkIjp0cnVlLCJjb2duaXRvOnVzZXJuYW1lIjoiYmluZ3RpbXJlbiIsInBob25lX251bWJlciI6Iis2MTQ4MTE1ODE1MCIsImV4cCI6MTUzNzYzMTUzNCwiaWF0IjoxNTM3NjI3OTM0LCJlbWFpbCI6ImJpbmcucmVuQGVhc3RpcC5jb20ifQ.IZmJt2Veo_I8Q-jHAoYQHUbMK4hsv8BskUjhw-KFPomwIiZkQWIVQ1Cg6C6Yie0JjsEdFBCkNYkIUhDLYfmIfMaqwFEcapSdrjacciczw47BfvQzI-bqi3cl6d9Nzj4J0JRg8rQuH01jnep-c2SgGm47mjcYxyg5lRUj2GVq93vso3dGawSQ-bgjzQsAzl_mt49KCuxieaD0LIHcJi8arWRyKGaNDCdIba23kabVxcIvqAR2ZF_EwQB5ufxOeQEQG8cYfujoKHBqNGs-4GH5UZsjlC7I9StBA6O29m75oNN2Gze0UvX7zxiNiRTV1XADydZZxo4geGbusnzXOoX46Q"
+    },
+    "method": "get",
+    "url": "https://v3vnrewmf8.execute-api.us-east-1.amazonaws.com/prod/greet"
+  },
+  "request": {}
+}
